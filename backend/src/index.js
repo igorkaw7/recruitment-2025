@@ -1,3 +1,4 @@
+require('dotenv').config({ path: '.env.local' });
 const debug = require('debug')('weathermap');
 
 const Koa = require('koa');
@@ -35,3 +36,5 @@ app.use(router.allowedMethods());
 app.listen(port);
 
 console.log(`App listening on port ${port}`);
+console.log(`Weather API key loaded: ${appId ? 'Yes' : 'No'}`);
+console.log(`Target city: ${targetCity}`);
