@@ -1,8 +1,8 @@
 const webpack = require('webpack');
 const path = require('path');
 
-const TransferWebpackPlugin = require('transfer-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const GLOBALS = {
   'process.env.ENDPOINT': JSON.stringify(process.env.ENDPOINT || 'http://0.0.0.0:9000/api'),
@@ -11,7 +11,7 @@ const GLOBALS = {
 module.exports = {
   mode: 'development',
   cache: true,
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-source-map',
   entry: {
     main: ['@babel/polyfill', path.join(__dirname, 'src/index.jsx')],
   },
@@ -23,14 +23,15 @@ module.exports = {
     ],
   },
   devServer: {
-    contentBase: 'src/public',
+    static: {
+      directory: path.join(__dirname, 'src/public'),
+    },
     historyApiFallback: true,
-    disableHostCheck: true,
     host: process.env.HOST || '0.0.0.0',
     port: process.env.PORT || 8000,
   },
   output: {
-    filename: '[name].[hash:8].js',
+    filename: '[name].[contenthash:8].js',
     publicPath: '/',
   },
   module: {
@@ -39,7 +40,7 @@ module.exports = {
         test: /\.(js|jsx)$/,
         include: path.resolve(__dirname, 'src'),
         loader: 'babel-loader',
-        query: {
+        options: {
           presets: [
             '@babel/preset-react',
             ['@babel/env', { targets: { browsers: ['last 2 versions'] }, modules: false }],
@@ -49,6 +50,25 @@ module.exports = {
           ],
         },
       },
+      {
+        test: /\.html$/,
+        loader: 'html-loader',
+        options: {
+          sources: {
+            list: [
+              {
+                tag: 'link',
+                attribute: 'href',
+                type: 'src',
+              }
+            ]
+          }
+        }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
+      }
     ],
   },
   plugins: [
@@ -57,8 +77,11 @@ module.exports = {
       filename: 'index.html',
     }),
     new webpack.HotModuleReplacementPlugin(),
-    new webpack.NoEmitOnErrorsPlugin(),
-    new TransferWebpackPlugin([{ from: 'src/public' }], '.'),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: 'src/public', to: '', globOptions: { ignore: ['**/index.html'] } }
+      ],
+    }),
     new webpack.DefinePlugin(GLOBALS),
   ],
 };
