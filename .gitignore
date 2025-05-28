@@ -20,4 +20,7 @@ Thumbs.db
 *.log
 *.tmp
 *.lock
+
+# Secrets
 id_rsa_internship.pub
+.env.local
