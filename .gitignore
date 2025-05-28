@@ -1,0 +1,23 @@
+# Dependency directories
+node_modules/
+
+# Log files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# IDE-specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Other files
+*.log
+*.tmp
+*.lock
+id_rsa_internship.pub
