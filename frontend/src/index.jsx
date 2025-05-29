@@ -33,6 +33,7 @@ class Weather extends React.Component {
 
     return (
       <div className="icon">
+      <p>Hot Reload Test passed!!</p>
         { icon && <img src={`/img/${icon}.svg`} /> }
       </div>
     );

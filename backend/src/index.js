@@ -38,3 +38,4 @@ app.listen(port);
 console.log(`App listening on port ${port}`);
 console.log(`Weather API key loaded: ${appId ? 'Yes' : 'No'}`);
 console.log(`Target city: ${targetCity}`);
+console.log("Hot reload test passed!!");

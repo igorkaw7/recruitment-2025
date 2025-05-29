@@ -76,7 +76,6 @@ module.exports = {
       template: 'src/public/index.html',
       filename: 'index.html',
     }),
-    new webpack.HotModuleReplacementPlugin(),
     new CopyWebpackPlugin({
       patterns: [
         { from: 'src/public', to: '', globOptions: { ignore: ['**/index.html'] } }
