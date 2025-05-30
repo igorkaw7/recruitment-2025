@@ -31,9 +31,10 @@ module.exports = {
     port: process.env.PORT || 8000,
   },
   output: {
-    filename: '[name].[contenthash:8].js',
-    publicPath: '/',
-  },
+  path: path.join(__dirname, 'dist'),
+  filename: '[name].[contenthash:8].js',
+  publicPath: '/',
+},
   module: {
     rules: [
       {

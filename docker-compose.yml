@@ -2,21 +2,31 @@ services:
   backend:
     env_file:
       - ./backend/.env.local
-    build: ./backend
+    build:
+      context: ./backend
+      target: dev
     ports:
       - "9000:9000"
     volumes:
       - ./backend:/usr/src/app
+      - /usr/src/app/node_modules
     command: npx nodemon src/index.js
+    labels:
+      com.eficode.stack: "weatherapp"
 
   frontend:
     env_file:
       - ./frontend/.env.local
-    build: ./frontend
+    build:
+      context: ./frontend
+      target: dev
     ports:
       - "8000:8000"
     volumes:
       - ./frontend:/usr/src/app
+      - /usr/src/app/node_modules
     command: npm start
     depends_on:
       - backend
+    labels:
+      com.eficode.stack: "weatherapp"

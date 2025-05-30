@@ -1,0 +1,28 @@
+services:
+  backend:
+    env_file:
+      - ./backend/.env.local
+    build:
+      context: ./backend
+      target: prod
+    ports:
+      - "9000:9000"
+    command: node src/index.js
+    restart: unless-stopped
+    labels:
+      com.example.stack: "weatherapp"
+
+  frontend:
+    env_file:
+      - ./frontend/.env.local
+    build:
+      context: ./frontend
+      target: prod
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+    depends_on:
+      - backend
+    labels:
+      com.example.stack: "weatherapp"
+      
