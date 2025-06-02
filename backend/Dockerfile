@@ -1,5 +1,6 @@
-# ---------- dependencies -----------------------------------------------------
 ARG NODE_VERSION=20
+
+# ---------- dependencies -----------------------------------------------------
 FROM node:${NODE_VERSION}-alpine AS deps
 WORKDIR /usr/src/app
 COPY package*.json ./

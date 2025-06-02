@@ -1,5 +1,6 @@
-# ---------- dependencies -----------------------------------------------------
 ARG NODE_VERSION=20
+
+# ---------- dependencies -----------------------------------------------------
 FROM node:${NODE_VERSION}-alpine AS deps
 WORKDIR /usr/src/app
 COPY package*.json ./
@@ -24,6 +25,8 @@ FROM node:${NODE_VERSION}-alpine AS build
 WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
+ARG ENDPOINT
+ENV ENDPOINT=${ENDPOINT}
 RUN npm run build
 
 # ---------- prod image -------------------------------------------------------
