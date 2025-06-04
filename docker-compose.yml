@@ -10,13 +10,10 @@ services:
     volumes:
       - ./backend:/usr/src/app
       - /usr/src/app/node_modules
-    command: npx nodemon src/index.js
     labels:
       com.eficode.stack: "weatherapp"
 
   frontend:
-    env_file:
-      - ./frontend/.env.local
     build:
       context: ./frontend
       target: dev

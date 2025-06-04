@@ -1,0 +1,86 @@
+---
+- name: Install Docker and configure users
+  hosts: weatherapp
+  become: yes
+  tasks:
+    - name: Update all packages
+      yum:
+        name: "*"
+        state: latest
+        update_only: yes
+
+    - name: Install required packages
+      yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+          - git
+        state: present
+
+    - name: Install Docker
+      yum:
+        name: docker
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Install Docker Compose
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.24.1/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+        dest: /usr/local/bin/docker-compose
+        mode: '0755'
+
+    - name: Ensure Docker CLI plugins directory exists
+      file:
+        path: /usr/local/lib/docker/cli-plugins
+        state: directory
+        mode: '0755'
+        recurse: yes
+
+    - name: Install Docker Compose plugin
+      get_url:
+        url: "https://github.com/docker/compose/releases/download/v2.24.1/docker-compose-{{ ansible_system }}-{{ ansible_architecture }}"
+        dest: /usr/local/lib/docker/cli-plugins/docker-compose
+        mode: '0755'
+
+    - name: Create symlink for Docker Compose plugin
+      file:
+        src: /usr/local/lib/docker/cli-plugins/docker-compose
+        dest: /usr/libexec/docker/cli-plugins/docker-compose
+        state: link
+        force: yes
+
+    - name: Create admin2 user
+      user:
+        name: admin2
+        groups: wheel,docker
+        shell: /bin/bash
+        createhome: yes
+        state: present
+
+    - name: Create ssh directory for admin2
+      file:
+        path: /home/admin2/.ssh
+        state: directory
+        mode: '0700'
+        owner: admin2
+        group: admin2
+
+    - name: Add ssh key for admin2
+      copy:
+        src: ../../keys/id_rsa_internship.pub
+        dest: /home/admin2/.ssh/authorized_keys
+        mode: '0600'
+        owner: admin2
+        group: admin2
+
+    - name: Configure sudo access for admin2
+      copy:
+        content: "admin2 ALL=(ALL) NOPASSWD: ALL"
+        dest: /etc/sudoers.d/admin2
+        mode: '0440'

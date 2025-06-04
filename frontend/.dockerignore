@@ -12,11 +12,6 @@ Thumbs.db
 .git
 .gitignore
 
-# Environment
-.env
-.env.local
-.env.example
-
 # Build output
 dist
 build

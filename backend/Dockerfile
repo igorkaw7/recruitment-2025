@@ -12,7 +12,6 @@ WORKDIR /usr/src/app
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 ENV NODE_ENV=development
-RUN npm install -g nodemon
 LABEL stage=dev \
       org.opencontainers.image.title="WeatherApp Backend (Dev)" \
       org.opencontainers.image.description="API with hot-reload" \

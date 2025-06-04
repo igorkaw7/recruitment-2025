@@ -27,6 +27,7 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 COPY . .
 ARG ENDPOINT
 ENV ENDPOINT=${ENDPOINT}
+ENV NODE_ENV=production
 RUN npm run build
 
 # ---------- prod image -------------------------------------------------------

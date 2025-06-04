@@ -1,15 +1,11 @@
 const webpack = require('webpack');
 const path = require('path');
-
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const GLOBALS = {
-  'process.env.ENDPOINT': JSON.stringify(process.env.ENDPOINT || 'http://0.0.0.0:9000/api'),
-};
 
 module.exports = {
-  mode: 'development',
+  mode: process.env.NODE_ENV || 'development',
   cache: true,
   devtool: 'eval-source-map',
   entry: {
@@ -82,6 +78,8 @@ module.exports = {
         { from: 'src/public', to: '', globOptions: { ignore: ['**/index.html'] } }
       ],
     }),
-    new webpack.DefinePlugin(GLOBALS),
+    new webpack.DefinePlugin({
+      'process.env.ENDPOINT': JSON.stringify(process.env.NODE_ENV === 'production' ? '/api' : process.env.ENDPOINT || 'http://localhost:9000/api'),
+    })
   ],
 };
