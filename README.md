@@ -1,59 +1,184 @@
 # Weatherapp
 
-There was a beautiful idea of building an app that would show the upcoming weather. The developers wrote a nice backend and a frontend following the latest principles and - to be honest - bells and whistles. However, the developers did not remember to add any information about the infrastructure or even setup instructions in the source code.
-Luckily we now have [docker compose](https://docs.docker.com/compose/) saving us from installing the tools on our computer, and making sure the app looks (and is) the same in development and in production. All we need is someone to add the few missing files!
+A simple weather application with containerized deployment, cloud hosting, and automated infrastructure provisioning.
 
-The idea of the exercise is to improve the bare-bone piece of code (i.e. the weatherapp) and ensure there's adequate infrastructure around it. 
-In real life scenario we might suggest to our customers to leverage cloud services to just run code in a serverless fashion - but that would make it difficult to evaluate technical skills - and that's the whole point of this exercise, ain't it? 
+## What Has Been Added to the Original Template
 
+The original repository contained basic frontend and backend code. This solution adds a complete production-ready infrastructure:
 
-## Returning your solution via Github
-Use Github to work on the solution and hand it in. Don't forget to update the README file to make it clear what did you concentrate on.
+### Docker and Docker Compose
 
-* Make a copy of this repository in your own Github account (do not fork unless you really want to be public).
-* Create a personal repository in Github.
-* Make changes, commit them, and push them in your own repository.
-* Send us the url where to find the code.
+- Multi-stage Dockerfiles for both frontend and backend with development and production targets  
+- Docker Compose configurations for both development and production environments  
+- Hot reload support for development with volume mounting  
+- Optimized builds using Alpine Linux and multi-stage builds  
 
-## Exercises
+### Infrastructure
 
-Here are some suggestions in different categories that you can do to make the app better. Before starting you need to get yourself an API key to make queries in the [openweathermap](http://openweathermap.org/). You can run the app locally using `npm i && npm start`.
-Remember, this is not a test for a developer position, so we're not after extensive changes in javascript code. Rather, we'd like to see you be able to work comfortably with containers, VMs in cloud and ideally, Ansible.
+- Terraform modules  
+- EC2 instance with security groups  
+- SSH key management  
 
-### Docker
+### Nginx
 
-* Add **Dockerfile**'s in the *frontend* and the *backend* directories to run them virtually on any environment having [docker](https://www.docker.com/) installed. It should work by saying e.g. `docker build -t weatherapp_backend . && docker run --rm -i -p 9000:9000 --name weatherapp_backend -t weatherapp_backend`. If it doesn't, remember to check your api key first.
-
-* Add a **docker-compose.yml** -file connecting the frontend and the backend, enabling running the app in a connected set of containers.
-
-* The developers are still keen to run the app and its pipeline on their own computers. Share the development files for the container by using volumes, and make sure the containers are started with a command enabling hot reload.
-
-### Cloud hosting
-
-* Set up the weather service in a free cloud hosting service, e.g. [Azure](https://azure.microsoft.com/en-us/free/), [AWS](https://aws.amazon.com/free/) or [Google Cloud](https://cloud.google.com/free/).
-* Enable external access to weather app via HTTP reverse proxy. We suggest creating one compute instance e.g. for AWS one EC2 instance, that will host both weather app and before mentioned proxy. Remember that Weather App should be exposed in a secure way.
-* Enable external SSH access and add id_rsa_internship.pub key, which you can find in this repository. We would like to check your work so grant us admin rights on your test system.
+- Nginx reverse proxy for secure external access  
+- Container isolation  
 
 ### Ansible
 
-* Write [Ansible](http://docs.ansible.com/ansible/intro.html) playbooks for installing [docker](https://www.docker.com/) and the app itself. These playbooks should work both for local and cloud environment.
+- Docker and Docker Compose v2 installation playbook  
+- Application deployment playbook  
+- Additional admin user management for task evaluation  
 
-#### Terraform
+---
 
-* Write [Terraform](https://www.terraform.io/) configuration files to set up infrastructure required to run the app in the cloud provider of your choice.
+## Prerequisites
 
-### Documentation
+Before running the app, ensure you have:
 
-* Remember to update the README
+1. Docker and Docker Compose installed on your local machine  
+2. OpenWeatherMap API key  
+3. AWS account  
+4. Terraform installed on your system  
+5. Ansible installed  
+6. SSH key pair for AWS access  
 
-* Use descriptive names and add comments in the code when necessary
+---
 
-### ProTips
+## Quick Start
 
-* The app must be ready to deploy and work flawlessly.
+### 1. Local Development Setup
 
-* Detailed instructions to run the app should be included in your forked version because a customer would expect detailed instructions also.
+#### Step 1: Clone and Configure
 
-* Extra points for making sure the app could be deployed with as few manual steps as possible.
+```bash
+# Clone the repository
+git clone https://github.com/igorkaw7/recruitment-2025.git
+cd recruitment-2025-main
 
-* Feel free to add would-be-nice-to-haves in the app / infra setup that you didn't have time to complete as possible further improvements in README.
+# Create backend environment file
+cp backend/.env.example backend/.env.local
+```
+
+#### Step 2: Configure Environment Variables
+
+Edit `backend/.env.local`:
+
+```env
+APPID=your_openweathermap_api_key_here
+MAP_ENDPOINT=http://api.openweathermap.org/data/2.5
+TARGET_CITY=Helsinki,fi
+PORT=9000
+```
+
+#### Step 3: Run the Application Locally in Development Mode
+
+```bash
+# Start development environment with hot reload
+docker compose up --build
+```
+
+Access the application:
+
+- Frontend: http://localhost:8000  
+- Backend API: http://localhost:9000/api/weather
+
+---
+
+### 2. Production Deployment on AWS
+
+#### Step 1: Infrastructure Provisioning
+
+```bash
+cd terraform
+
+# Initialize Terraform
+terraform init
+
+# Review the infrastructure plan
+terraform plan
+
+# Deploy infrastructure
+terraform apply
+```
+
+Note the output IP address for next steps or run:
+
+```bash
+terraform output
+```
+
+#### Step 2: Configure Ansible Inventory
+
+Update `host.ini` with your EC2 instance IP:
+
+```ini
+[weatherapp]
+weatherapp ansible_host=YOUR_EC2_PUBLIC_IP ansible_user=ec2-user
+
+[all:vars]
+ansible_python_interpreter=/usr/bin/python3
+```
+
+#### Step 3: Install Docker and Deploy Application
+
+```bash
+cd ansible
+
+# Install Docker on the remote server
+ansible-playbook playbooks/install_docker.yml
+
+# Deploy the application
+ansible-playbook playbooks/deploy_app.yml
+```
+
+#### Step 4: Access the Application
+
+- HTTP: http://YOUR_EC2_PUBLIC_IP  
+- API: http://YOUR_EC2_PUBLIC_IP/api/weather  
+
+---
+
+## Local Development Workflow
+
+1. Make code changes in `backend/src` or `frontend/src`  
+2. Changes automatically reload in development containers  
+3. Test changes at http://localhost:8000  
+
+---
+
+## Possible Improvements
+
+### Enable communication over HTTPS
+- Obtain a domain name  
+- Configure DNS to resolve the domain to the EC2 public IP using Route 53  
+- Add Let's Encrypt certificates  
+- Enable port 443 access  
+- Create an SSL-enhanced Nginx configuration  
+
+### Health Checks
+
+- Add basic Docker Compose health checks  
+  - Use `wget --quiet --tries=1 --spider` for API and frontend  
+  - Use `nginx -t` for Nginx validation  
+
+### Certbot Integration
+
+- Add a Certbot service to Docker Compose for SSL certificate management  
+
+### SSL Setup Playbook
+
+- Automate SSL certificate generation and management  
+- Connect certificate to updated Nginx config and Certbot  
+- Setup certificate renewal cron job  
+- Test API over HTTPS  
+
+### CI/CD
+
+- Automate deployment with GitHub Actions  
+- Deploy jobs executed on deploy agents  
+
+### AWS Secrets Manager Integration
+
+- Store the API key securely  
+- Use IAM-based permissions to control access by deploy agents  
