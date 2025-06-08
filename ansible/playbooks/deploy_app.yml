@@ -1,6 +1,6 @@
 ---
 - name: Deploy Weather App
-  hosts: weatherapp
+  hosts: weatherapp_group
   become: yes
   vars:
     app_dir: /opt/weatherapp
