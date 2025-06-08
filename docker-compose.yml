@@ -1,6 +1,6 @@
 services:
   backend:
-    env_file:
+    env_file: # inject env vars at container runtime
       - ./backend/.env.local
     build:
       context: ./backend
